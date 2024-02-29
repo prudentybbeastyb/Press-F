@@ -6,18 +6,21 @@ class MathQuizApp:
     def __init__(self, root):
         self.root = root
         self.root.title("Math Quiz")
-        self.root.geometry("400x200")
+        self.root.geometry("400x250")
 
         self.score = 0
         self.question_number = 1
 
-        self.label_question = tk.Label(root, text="")
+        self.label_question = tk.Label(root, text="", font=("Helvetica", 14))
         self.label_question.pack(pady=20)
 
-        self.entry_answer = tk.Entry(root)
+        self.entry_answer = tk.Entry(root, font=("Helvetica", 12))
         self.entry_answer.pack(pady=10)
 
-        self.btn_submit = tk.Button(root, text="Submit", command=self.check_answer)
+        self.feedback_label = tk.Label(root, text="", font=("Helvetica", 12), fg="green")
+        self.feedback_label.pack(pady=10)
+
+        self.btn_submit = tk.Button(root, text="Submit", command=self.check_answer, font=("Helvetica", 12))
         self.btn_submit.pack()
 
         self.generate_question()
@@ -25,21 +28,35 @@ class MathQuizApp:
     def generate_question(self):
         num1 = random.randint(1, 10)
         num2 = random.randint(1, 10)
+        operation = random.choice(["+", "-", "*", "/"])
 
-        self.answer = num1 + num2
+        if operation == "+":
+            self.answer = num1 + num2
+        elif operation == "-":
+            self.answer = num1 - num2
+        elif operation == "*":
+            self.answer = num1 * num2
+        elif operation == "/":
+            num2 = random.randint(1, 5)  # To avoid division by zero
+            self.answer = num1 / num2
 
-        question_text = f"Question {self.question_number}: {num1} + {num2} = ?"
+        question_text = f"Question {self.question_number}: {num1} {operation} {num2} = ?"
         self.label_question.config(text=question_text)
+        self.feedback_label.config(text="")
 
     def check_answer(self):
         user_answer = self.entry_answer.get()
 
         try:
-            user_answer = int(user_answer)
+            user_answer = float(user_answer)
 
             if user_answer == self.answer:
                 self.score += 1
+                feedback = "Correct!"
+            else:
+                feedback = f"Wrong! The correct answer is {self.answer}"
 
+            self.feedback_label.config(text=feedback)
             self.question_number += 1
 
             if self.question_number <= 5:
